@@ -1,0 +1,61 @@
+﻿@page
+@model SalesReportingApplication.Pages.SalesTransactions.CreateModel
+@{
+    ViewData["Title"] = "Create Sales Transaction";
+    var userId = HttpContext.Session.GetInt32("UserID");
+}
+
+@if (userId.HasValue)
+{
+
+    <h2>Create Sales Transaction</h2>
+
+    <form method="post">
+        <div class="form-group">
+            <label for="salesItem">Sales Item:</label>
+            <input type="text" class="form-control" id="salesItem" name="salesItem" required>
+        </div>
+        <div class="form-group">
+            <label for="salesDate">Sales Date:</label>
+            <input type="date" class="form-control" id="salesDate" name="salesDate" required>
+        </div>
+        <div class="form-group">
+            <label for="userID">User:</label>
+            <select class="form-control" id="userDropdown" name="userID" required>
+                <option value="">Select User</option>
+                @foreach (var user in Model.Users)
+                {
+                    <option value="@user.UserID">@user.UserName</option>
+                }
+            </select>
+
+
+        </div>
+        <input type="hidden" id="transactionUserID" name="transactionUserID" value="">
+        <div class="form-group">
+            <label for="amount">Amount:</label>
+            <input type="number" class="form-control" id="amount" name="amount" required>
+        </div>
+        <div class="form-group">
+            <label for="updatedDate">Updated Date:</label>
+            <input type="date" class="form-control" id="updatedDate" name="updatedDate" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+    @section Scripts {
+    <script>
+
+        document.getElementById('userDropdown').addEventListener('change', function () {
+
+            var selectedUserID = this.value;
+
+            document.getElementById('transactionUserID').value = selectedUserID;
+        });
+    </script>
+    }
+}
+else
+{
+    <script>window.location.href = '/Login';</script>
+}
+

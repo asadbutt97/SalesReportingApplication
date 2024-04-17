@@ -1,0 +1,58 @@
+﻿@page
+@model SalesReportingApplication.Pages.Users.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    var userId = HttpContext.Session.GetInt32("UserID");
+}
+
+@if (userId.HasValue)
+{
+
+    <h2>Create User</h2>
+
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="User.UserName"></label>
+            <input asp-for="User.UserName" class="form-control" />
+            <span asp-validation-for="User.UserName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="User.LoginID"></label>
+            <input asp-for="User.LoginID" class="form-control" />
+            <span asp-validation-for="User.LoginID" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="User.Password"></label>
+            <input asp-for="User.Password" type="password" class="form-control" />
+            <span asp-validation-for="User.Password" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="User.UserRole"></label>
+            <input asp-for="User.UserRole" class="form-control" />
+            <span asp-validation-for="User.UserRole" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="User.ReportingManager"></label>
+            <input asp-for="User.ReportingManager" class="form-control" />
+            <span asp-validation-for="User.ReportingManager" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+
+    @section Scripts {
+    @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+
+}
+else
+{
+    <script>window.location.href = '/Login';</script>
+}

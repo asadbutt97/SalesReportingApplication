@@ -1,0 +1,87 @@
+﻿@page
+@model SalesReportingApplication.Pages.Users.IndexModel
+@{
+    ViewData["Title"] = "List of Users";
+    var userId = HttpContext.Session.GetInt32("UserID");
+}
+
+@if (userId.HasValue)
+{
+
+    <h2>List of Users</h2>
+
+    <a class="btn btn-primary mb-3" href="/Users/Create">Create New User</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>User Name</th>
+                <th>Login ID</th>
+                <th>User Role</th>
+                <th>Reporting Manager</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="userListBody"></tbody>
+    </table>
+
+    @section Scripts {
+    <script>
+
+        function fetchUsers() {
+            fetch('/sales/users')
+                .then(response => response.json())
+                .then(data => {
+
+                    document.getElementById('userListBody').innerHTML = '';
+
+                    data.forEach(user => {
+                        var row = document.createElement('tr');
+                        row.innerHTML = `
+                                            <td>${user.userID}</td>
+                                            <td>${user.userName}</td>
+                                            <td>${user.loginID}</td>
+                                            <td>${user.userRole}</td>
+                                            <td>${user.reportingManager}</td>
+                                            <td>
+                                                <a class="btn btn-primary btn-sm" href="/Users/Edit/${user.userID}">Edit</a>
+                                                        <button class="btn btn-danger" onclick="confirmDelete(${user.userID})">Delete</button>
+                                            </td>
+                                        `;
+                        document.getElementById('userListBody').appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching users:', error));
+        }
+
+        function confirmDelete(userID) {
+            if (confirm('Are you sure you want to delete this user?')) {
+
+                fetch(`/sales/users/${userID}`, {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (response.ok) {
+
+                            window.location.reload();
+                        } else {
+
+                            console.error('Failed to delete user.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error occurred:', error);
+                    });
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', fetchUsers);
+    </script>
+    }
+}
+else
+{
+    <script>window.location.href = '/Login';</script>
+}

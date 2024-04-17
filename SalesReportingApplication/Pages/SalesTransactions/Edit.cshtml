@@ -1,0 +1,45 @@
+﻿@page "{id:int}"
+@model SalesReportingApplication.Pages.SalesTransactions.EditModel
+@{
+    ViewData["Title"] = "Edit Sales Transaction";
+    var userId = HttpContext.Session.GetInt32("UserID");
+}
+
+@if (userId.HasValue)
+{
+
+
+    <h2>Edit Sales Transaction</h2>
+
+    <form method="post">
+        <div class="form-group">
+            <label for="salesItem">Sales Item:</label>
+            <input type="text" class="form-control" id="salesItem" name="salesItem" value="@Model.Transaction.SalesItem" required>
+        </div>
+        <div class="form-group">
+            <label for="salesDate">Sales Date:</label>
+            <input type="date" class="form-control" id="salesDate" name="salesDate" value="@Model.Transaction.SalesDate.ToString("yyyy-MM-dd")" required>
+        </div>
+        <div class="form-group">
+            <label for="userID">User </label>
+            <input type="text" class="form-control" id="userID" name="userID" value="@Model.Transaction.UserProfile.UserName" readonly>
+        </div>
+        <div class="form-group">
+            <label for="amount">Amount:</label>
+            <input type="number" class="form-control" id="amount" name="amount" value="@Model.Transaction.Amount" required>
+        </div>
+        <div class="form-group">
+            <label for="updatedDate">Updated Date:</label>
+            <input type="date" class="form-control" id="updatedDate" name="updatedDate" value="@Model.Transaction.UpdatedDate.ToString("yyyy-MM-dd")" required>
+        </div>
+
+        <input type="hidden" id="transactionID" name="transactionID" value="@Model.Transaction.TransactionID">
+        <input type="hidden" id="transactionUserID" name="transactionUserID" value="@Model.Transaction.TransactionUserID">
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+}
+else
+{
+    <script>window.location.href = '/Login';</script>
+}

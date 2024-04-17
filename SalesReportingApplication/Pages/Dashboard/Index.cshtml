@@ -1,0 +1,111 @@
+﻿@page
+@model SalesReportingApplication.Pages.Dashboard.IndexModel
+@{
+    ViewData["Title"] = "Home Page";
+    var userId = HttpContext.Session.GetInt32("UserID");
+}
+
+@if (userId.HasValue)
+{
+    <h2>Welcome to Sales Reporting Application</h2>
+    <h2>Yearly Sales Summary</h2>
+
+<select id="yearDropdown" class="form-select">
+        <option  value="0">Select Year</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+    </select>
+
+    <div id="chartContainer" style="height: 500px; display: flex; justify-content: center; align-items: center;">
+        </div>
+
+  
+
+    @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const currentYear = new Date().getFullYear();
+        fetchChartData(currentYear);
+
+        document.getElementById('yearDropdown').addEventListener('change', function () {
+
+            const selectedYear = this.value;
+        
+            fetchChartData(selectedYear);
+        });
+
+        function fetchChartData(year) {
+      
+            fetch(`/Sales/reports/yearlysummary/${year}`)
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+
+                    console.log(data);
+
+                    const labels = data.map(summary => `${getMonthName(summary.month)} ${summary.year}`);
+                    const salesData = data.map(summary => summary.totalSales);
+                    renderChart(labels, salesData);
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+
+        function renderChart(labels, data) {
+
+            const existingCanvas = document.getElementById('salesChart');
+            if (existingCanvas) {
+                existingCanvas.parentNode.removeChild(existingCanvas);
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.id = 'salesChart';
+
+            const container = document.getElementById('chartContainer');
+            if (!container) return;
+            container.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Yearly Sales Summary',
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true 
+                        }
+                    }
+                }
+            });
+
+         
+        }
+        function getMonthName(monthNumber) {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            return months[monthNumber - 1] || '';
+        }
+        </script>
+        }
+
+}
+else
+{
+    <script>window.location.href = '/Login';</script>
+}
